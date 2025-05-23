@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_6528ca59a5198b7035d1f174f3316aa1 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_6528ca59a5198b7035d1f174f3316aa1" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_6528ca59a5198b7035d1f174f3316aa1 = L.map(
+                "map_6528ca59a5198b7035d1f174f3316aa1",
+                {
+                    center: [48.8566, 2.3522],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 12,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_c2508b356b022e92d918b8181e7df677 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_c2508b356b022e92d918b8181e7df677.addTo(map_6528ca59a5198b7035d1f174f3316aa1);
+        
+    
+            var marker_7ba1dfd3f8e9215d785d814f6259c4af = L.marker(
+                [48.8606, 2.3376],
+                {
+}
+            ).addTo(map_6528ca59a5198b7035d1f174f3316aa1);
+        
+    
+            var icon_5c867c5edc5c687ef3325fbdf2c3c92f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4c6860560f972e991ccad46030733856 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_464f434b249ecee0403c1e236ee817e9 = $(`<div id="html_464f434b249ecee0403c1e236ee817e9" style="width: 100.0%; height: 100.0%;"><b>Louvre Museum</b><br>museum<br>A world-famous art museum in Paris.<br>Weather: indoor</div>`)[0];
+                popup_4c6860560f972e991ccad46030733856.setContent(html_464f434b249ecee0403c1e236ee817e9);
+            
+        
+
+        marker_7ba1dfd3f8e9215d785d814f6259c4af.bindPopup(popup_4c6860560f972e991ccad46030733856)
+        ;
+
+        
+    
+    
+                marker_7ba1dfd3f8e9215d785d814f6259c4af.setIcon(icon_5c867c5edc5c687ef3325fbdf2c3c92f);
+            
+    
+            var marker_bfa1e57dd552c414266b482a775fe88d = L.marker(
+                [48.8584, 2.2945],
+                {
+}
+            ).addTo(map_6528ca59a5198b7035d1f174f3316aa1);
+        
+    
+            var icon_738e09dbbc33f3eb65353750a3358ca1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "cloud",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_108afec67ae4b0d936bfd55efed3d111 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_5eba0af61997851d5196a2cc301f6237 = $(`<div id="html_5eba0af61997851d5196a2cc301f6237" style="width: 100.0%; height: 100.0%;"><b>Eiffel Tower</b><br>monument<br>An iconic symbol of Paris.<br>Weather: outdoor</div>`)[0];
+                popup_108afec67ae4b0d936bfd55efed3d111.setContent(html_5eba0af61997851d5196a2cc301f6237);
+            
+        
+
+        marker_bfa1e57dd552c414266b482a775fe88d.bindPopup(popup_108afec67ae4b0d936bfd55efed3d111)
+        ;
+
+        
+    
+    
+                marker_bfa1e57dd552c414266b482a775fe88d.setIcon(icon_738e09dbbc33f3eb65353750a3358ca1);
+            
+    
+            var marker_990dbe51a857096a11f3ce15ca4df994 = L.marker(
+                [48.8545, 2.3336],
+                {
+}
+            ).addTo(map_6528ca59a5198b7035d1f174f3316aa1);
+        
+    
+            var icon_ebe1acd73609393831977e94976271ce = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "sun-o",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7a1748ba0aba49766cf3b2f00f3c8f09 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_be197069585ad57740ddfe4511150ed7 = $(`<div id="html_be197069585ad57740ddfe4511150ed7" style="width: 100.0%; height: 100.0%;"><b>Café de Flore</b><br>café<br>A historic and trendy café in Paris.<br>Weather: sunny</div>`)[0];
+                popup_7a1748ba0aba49766cf3b2f00f3c8f09.setContent(html_be197069585ad57740ddfe4511150ed7);
+            
+        
+
+        marker_990dbe51a857096a11f3ce15ca4df994.bindPopup(popup_7a1748ba0aba49766cf3b2f00f3c8f09)
+        ;
+
+        
+    
+    
+                marker_990dbe51a857096a11f3ce15ca4df994.setIcon(icon_ebe1acd73609393831977e94976271ce);
+            
+</script>
+</html>

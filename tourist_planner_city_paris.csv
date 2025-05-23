@@ -1,0 +1,6 @@
+name,longitude,latitude,category,weather_suitability,description
+Luxembourg Gardens,2.3372,48.8462,sight,sunny,Stately park for promenades
+Musée d'Orsay,2.3266,48.86,sight,rainy,Impressionist heaven in a beaux-arts station
+Angelina Café,2.3285,48.8665,cafe,any,Rich hot chocolate & Belle-Époque décor Please make a similar .csv sights_berlin for me
+Montmartre,2.3431,48.8867,sight,sunny,Bohemian hill with artists’ squares
+Eiffel Tower,2.2945,48.8584,sight,sunny,Paris icon with sweeping city views

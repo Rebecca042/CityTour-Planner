@@ -1,0 +1,9 @@
+name,longitude,latitude,category,weather_suitability,description
+Brandenburger Tor,13.3777,52.5163,sight,sunny,Iconic 18th-century gate and symbol of reunification
+Museum Island,13.3996,52.5169,sight,rainy,Cluster of world-class museums ideal for wet days
+East Side Gallery,13.4399,52.5050,sight,cloudy,Open-air murals on the longest surviving Berlin Wall section
+Café am Neuen See,13.3396,52.5148,cafe,any,Lakeside beer-garden café in Tiergarten
+Tempelhofer Feld,13.4024,52.4736,park,sunny,Former airport turned huge urban park for cycling & kite-skating
+Pergamonmuseum,13.3969,52.5212,museum,rainy,Ancient treasures including the Pergamon Altar
+Markthalle Neun,13.4319,52.4999,market,any,Historic market hall hosting global street-food events
+Reichstag Dome,13.3779,52.5186,sight,cloudy,Glass dome offering panoramic city views (pre-booking advised)

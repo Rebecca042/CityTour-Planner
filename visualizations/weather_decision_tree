@@ -1,0 +1,12 @@
+// Weather Decision Tree
+digraph {
+	A [label="Precipitation sum > 1.0?"]
+	B [label=Rainy]
+	A -> B [label=Yes]
+	C [label="Avg Temp > 20°C?"]
+	A -> C [label=No]
+	D [label=Sunny]
+	C -> D [label=Yes]
+	E [label=Cloudy]
+	C -> E [label=No]
+}
