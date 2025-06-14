@@ -1,0 +1,16 @@
+name,longitude,latitude,category,weather_suitability,description
+Eiffel Tower,2.2945,48.8584,sight,sunny,Paris icon with sweeping city views
+Louvre Museum,2.3376,48.8606,museum,rainy,World's largest art museum - perfect for indoor days
+Notre Dame Cathedral,2.3499,48.8530,sight,any,Iconic Gothic cathedral - currently under restoration
+Arc de Triomphe,2.2950,48.8738,sight,sunny,Monument commemorating French victories
+Sacre-Coeur Basilica,2.3431,48.8868,sight,any,Stunning basilica on Montmartre hill
+Musée d'Orsay,2.3266,48.8600,museum,rainy,Impressionist and post - Impressionist masterpieces
+Luxembourg Gardens,2.3372,48.8462,park,sunny,Beautiful public park with fountains and statues
+Palais Garnier,2.3317,48.8719,sight,any,Opulent opera house - famous for Phantom of the Opera
+Centre Pompidou,2.3524,48.8607,museum,rainy,Modern art and cultural center with unique architecture
+Sainte-Chapelle,2.3453,48.8550,sight,any,Royal chapel with magnificent stained glass
+Les Invalides,2.3129,48.8560,museum,any,Complex of museums and monuments - including Napoleon's tomb
+Pont Neuf,2.3413,48.8576,bridge,any,Oldest standing bridge across the Seine River
+Picasso Museum,2.3621,48.8596,museum,rainy,Extensive collection of Picasso's works
+Moulin Rouge,2.3323,48.8842,entertainment,any,Historic cabaret famous for its can-can dancers
+Place des Vosges,2.3638,48.8557,park,sunny,Oldest planned square in Paris

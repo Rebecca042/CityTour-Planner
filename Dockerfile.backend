@@ -1,0 +1,43 @@
+# Dockerfile.backend
+# Place this file in the root of your WalkingVacation project.
+
+FROM python:3.11-slim
+
+# Install system dependencies required for FastAPI and potential planner modules
+# - build-essential: For compiling C/C++ code (if any Python packages require compilation)
+# - coinor-cbc: Keep this if your MILP solver (used by your planner/optimize.py) relies on the CBC solver
+# - git, graphviz, ca-certificates: For various utilities and secure connections
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        coinor-cbc \
+        git \
+        graphviz \
+        ca-certificates && \
+    rm -rf /var/lib/apt/lists/* # Clean up apt cache to keep image size small
+
+# Set environment variables
+ENV PYTHONUNBUFFERED 1
+ENV APP_HOME /app
+
+# Create and set working directory inside the container
+WORKDIR $APP_HOME
+
+# Copy only the backend-specific requirements.txt first to leverage Docker's build cache
+# IMPORTANT: You must create api/requirements.txt with your FastAPI dependencies.
+COPY api/requirements.txt ./api/requirements.txt
+RUN pip install --no-cache-dir -r ./api/requirements.txt
+
+# Copy the entire project content into the container
+# This makes your 'planner' module accessible to FastAPI.
+COPY . $APP_HOME
+
+# Set PYTHONPATH so Python can find your 'app' and 'planner' modules when imported
+ENV PYTHONPATH=/app
+
+# Expose the port FastAPI will run on
+EXPOSE 8000
+
+# Command to run the FastAPI application using Uvicorn
+# Assumes your FastAPI app instance is named 'app' in api/main.py
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]

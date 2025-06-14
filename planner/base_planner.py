@@ -1,21 +1,125 @@
 from .aware_tour import split_day_into_slots, is_weather_suitable, optimize_route
+from .get_route import generate_information_full_day_tour
 from .weather import get_weather_condition #p
 from .postcard import generate_postcard #p
 from abc import ABC, abstractmethod
 import math
 from collections import defaultdict
+from .tour_planner_orchestrator import plan_citytour_iterative
+
+import time
 
 class Planner(ABC):
     @abstractmethod
     def plan(self, sights, city_center, mode, weather_forecast):
         pass
 
+# --- DayPlanner Class ---
 class DayPlanner(Planner):
-    def plan(self, sights, city_center, mode, weather_forecast):
-        tour_plan = create_weather_aware_tour(sights, weather_forecast, city_center, mode=mode)
+    async def plan(self, sights, city_center, mode, weather_forecast):
+        """
+        Plans a full-day tour using both weather-aware and iterative strategies,
+        and generates comprehensive information for each, including total route
+        length and duration using efficient OSRM calls.
 
-        flat_plan = [s for slot_sights in tour_plan.values() for s in slot_sights]
-        postcards = [generate_postcard(s, weather_forecast) for s in flat_plan]
+        Returns a dictionary containing details for both plans suitable for table display.
+        """
+        results = {}
+
+        # --- Weather-Aware Tour Planning and Information Generation ---
+        print("\n--- Measuring create_weather_aware_tour ---")
+        start_time_aware_planning = time.time()
+        tour_plan_aware = create_weather_aware_tour(sights, weather_forecast, city_center, mode=mode)
+        end_time_aware_planning = time.time()
+        elapsed_time_aware_planning = end_time_aware_planning - start_time_aware_planning
+        print(f"Time taken for weather-aware plan generation: {elapsed_time_aware_planning:.4f} seconds")
+
+        # Calculate full tour information for weather-aware plan using the efficient function
+        start_time_aware_routing = time.time()
+        aware_tour_info = await  generate_information_full_day_tour(tour_plan_aware, city_center, mode)
+        end_time_aware_routing = time.time()
+        elapsed_time_aware_routing = end_time_aware_routing - start_time_aware_routing
+        print(f"Time taken for weather-aware full route calculation: {elapsed_time_aware_routing:.4f} seconds")
+
+        results["aware_plan"] = {
+            "tour_plan": tour_plan_aware,
+            "planning_time_seconds": elapsed_time_aware_planning,
+            "routing_time_seconds": elapsed_time_aware_routing,
+            "total_length_meters": aware_tour_info.get('total_subtour_length_meters', 0.0),
+            "total_duration_seconds": aware_tour_info.get('total_duration_seconds', 0.0),
+            "full_route_geojson": aware_tour_info.get('full_route_geojson'),
+            "message": aware_tour_info.get('message'),
+            "haversine_total_length_meters": aware_tour_info.get('haversine_total_length_meters', 0.0),
+            "haversine_subtour_lengths_meters": aware_tour_info.get('haversine_subtour_lengths_meters', {}),
+            "haversine_total_subtour_length_meters": aware_tour_info.get('haversine_total_subtour_length_meters', 0.0)
+        }
+
+        # --- Iterative Tour Planning and Information Generation ---
+        print("\n--- Measuring plan_citytour_iterative ---")
+        start_time_iterative_planning = time.time()
+        tour_plan_iterative = plan_citytour_iterative(
+            sights=sights,
+            city_center=city_center,
+            weather_forecast=weather_forecast # iterative might not strictly need weather but pass for consistency
+        )
+        end_time_iterative_planning = time.time()
+        elapsed_time_iterative_planning = end_time_iterative_planning - start_time_iterative_planning
+        print(f"Time taken for iterative plan generation: {elapsed_time_iterative_planning:.4f} seconds")
+
+        # Calculate full tour information for iterative plan using the efficient function
+        start_time_iterative_routing = time.time()
+        iterative_tour_info = await generate_information_full_day_tour(tour_plan_iterative, city_center, mode)
+        end_time_iterative_routing = time.time()
+        elapsed_time_iterative_routing = end_time_iterative_routing - start_time_iterative_routing
+        print(f"Time taken for iterative full route calculation: {elapsed_time_iterative_routing:.4f} seconds")
+
+        results["iterative_plan"] = {
+            "tour_plan": tour_plan_iterative,
+            "planning_time_seconds": elapsed_time_iterative_planning,
+            "routing_time_seconds": elapsed_time_iterative_routing,
+            "total_length_meters": iterative_tour_info.get('total_subtour_length_meters', 0.0),
+            "total_duration_seconds": iterative_tour_info.get('total_duration_seconds', 0.0),
+            "full_route_geojson": iterative_tour_info.get('full_route_geojson'),
+            "message": iterative_tour_info.get('message'),
+            "haversine_total_length_meters": iterative_tour_info.get('haversine_total_length_meters', 0.0),
+            "haversine_subtour_lengths_meters": iterative_tour_info.get('haversine_subtour_lengths_meters', {}),
+            "haversine_total_subtour_length_meters": iterative_tour_info.get('haversine_total_subtour_length_meters', 0.0)
+        }
+
+        results["selected_plan_type"] = "aware" # Default selection, can be changed based on criteria
+
+        return results
+
+    def plan_all(self, sights, city_center, mode, weather_forecast):
+        """
+        Original 'plan_old' method, renamed to 'plan_all' as requested.
+        This method is kept for compatibility with its original return structure.
+        """
+        # --- Option 1: create_weather_aware_tour ---
+        print("\n--- Measuring create_weather_aware_tour ---")
+        start_time_aware = time.time()
+        tour_plan_aware = create_weather_aware_tour(sights, weather_forecast, city_center, mode=mode)
+        end_time_aware = time.time()
+        elapsed_time_aware = end_time_aware - start_time_aware
+        print(f"Time taken for plan_citytour_iterative - new : {elapsed_time_aware:.4f} seconds")
+        print(f"Tour Plan (Weather-Aware): {tour_plan_aware}")
+
+        # --- Option 2: plan_citytour_iterative ---
+        print("\n--- Measuring plan_citytour_iterative ---")
+        start_time_iterative = time.time()
+        tour_plan_iterative = plan_citytour_iterative(
+            sights=sights,
+            city_center=city_center,
+            weather_forecast=weather_forecast
+        )
+        end_time_iterative = time.time()
+        elapsed_time_iterative = end_time_iterative - start_time_iterative
+        print(f"Time taken for plan_citytour_iterative: {elapsed_time_iterative:.4f} seconds")
+        print(f"Tour Plan (Iterative): {tour_plan_iterative}")
+
+        flat_plan = [s for slot_sights in tour_plan_iterative.values() for s in slot_sights]
+        # Assuming generate_postcard is available
+        # postcards = [generate_postcard(s, weather_forecast) for s in flat_plan]
 
         def get_main_weather(forecast):
             values = forecast.values()
@@ -30,7 +134,9 @@ class DayPlanner(Planner):
 
         main_weather = get_main_weather(weather_forecast)
 
-        return flat_plan, main_weather, postcards, tour_plan
+        # Note: The original 'plan_old' returned flat_plan, main_weather, postcards, tour_plan_iterative.
+        # If 'postcards' generation is still needed, ensure 'generate_postcard' is available.
+        return flat_plan, main_weather, None, tour_plan_iterative # Returning None for postcards for now
 
 # Later, add:
 # class WeekPlanner(Planner):

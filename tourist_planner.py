@@ -4,7 +4,7 @@ from typing import Optional
 
 from planner.data_loader import load_sights_from_csv, save_sights_to_csv
 from planner.osm import fetch_osm_sights
-from planner.get_route import plot_route_with_sights
+from planner.get_route import plot_route_with_sights, plot_full_day_tour
 from planner.base_planner import DayPlanner
 from planner.weather import get_weather_forecast
 from planner.userquiz import quiz_add_sight, quiz_sight_modification
@@ -13,6 +13,8 @@ from planner.genai import narrate
 import unicodedata
 from pathlib import Path
 from slugify import slugify
+from shapely.geometry import Point # Import Point
+import osmnx as ox
 
 def city_slug(city: str) -> str:
     """Convert 'Berlin, Germany' -> 'berlin'."""
@@ -51,9 +53,30 @@ def resolve_csv_path(city: str, cli_path: Optional[str]) -> Path:
 
     return DEFAULT_DATA_DIR / "sights.csv"
 
+CITY_CENTER_DEFAULT_COORDS = { # Use a lookup for defaults, similar to API/Streamlit
+    "Paris": (48.8566, 2.3522),
+    "Berlin": (52.52, 13.405),
+}
+# Define a central get_city_center function that returns Point
+def get_city_center(city_name: str) -> Point:
+    city_name = city_name.split(",")[0].strip() # Use only the city name for lookup
+    if city_name in CITY_CENTER_DEFAULT_COORDS:
+        lat, lon = CITY_CENTER_DEFAULT_COORDS[city_name]
+    else:
+        # Fallback to geocoding if not in lookup
+        # You'll need to install osmnx (pip install osmnx) if not already
+        print(f"Geocoding '{city_name}' using OpenStreetMap...")
+        try:
+            lat, lon = ox.geocode(city_name)
+            CITY_CENTER_DEFAULT_COORDS[city_name] = (lat, lon) # Cache for future runs
+        except Exception as e:
+            print(f"Error geocoding city: {e}. Defaulting to Paris.")
+            lat, lon = CITY_CENTER_DEFAULT_COORDS["Paris"]
+
+    return Point(lon, lat) # Return Point(longitude, latitude)
+
 DEFAULT_DATA_DIR = Path("data")
 CSV_PATH = DEFAULT_DATA_DIR / "sights.csv"
-CITY_CENTER = (48.8566, 2.3522)  # Paris default
 MODES = ["walking", "cycling", "driving"]
 
 def main():
@@ -64,6 +87,9 @@ def main():
     ap.add_argument("--refresh-osm", action="store_true", help="Force re-download of OSM data (ignore cache)")
     ap.add_argument("--sight-file", default=None, help="Path to CSV file with predefined sights")
     args = ap.parse_args()
+
+    CITY_CENTER_POINT = get_city_center(args.city)
+    print(f"Using city center: {CITY_CENTER_POINT.x}, {CITY_CENTER_POINT.y}")
 
     CSV_PATH = resolve_csv_path(args.city, args.sight_file)
     print(f"📁 Loading sights from: {CSV_PATH}")
@@ -92,7 +118,7 @@ def main():
 
     print(f"Loaded {len(sights)} sights")
 
-    forecast = get_weather_forecast(CITY_CENTER[0], CITY_CENTER[1], date.today())
+    forecast = get_weather_forecast(CITY_CENTER_POINT, date.today())
     print(f"Weather forecast: {forecast}")
 
     selected_sights = []
@@ -142,16 +168,25 @@ def main():
                 print(f"Invalid mode selected. Defaulting to walking.")
                 mode = "walking"
 
-            tour_sights = selected_sights if selected_sights else sights
+            tour_sights_candidate = selected_sights if selected_sights else sights
+            # Limit the number of sights to a maximum of 10
+            tour_sights = tour_sights_candidate[:10]
 
-            plan, weather, postcards, tour_plan = planner.plan(tour_sights, CITY_CENTER, mode, forecast)
+
+            plan, weather, postcards, tour_plan = planner.plan_all(tour_sights, CITY_CENTER_POINT, mode, forecast)
 
             slot_postcards: dict[str, str] = {}
             idx = 0
             for slot, slot_sights in tour_plan.items():
-                if idx < len(postcards):
-                    slot_postcards[slot] = postcards[idx]
-                    idx += 1
+
+                if postcards is not None:  # Check if it's not None first
+                    if idx < len(postcards):
+                        slot_postcards[slot] = postcards[idx]
+                        idx += 1
+                else:
+                    # Handle the case where postcards is None, perhaps log a message or assign an empty list
+                    postcards = []  # Assign an empty list to avoid future errors if needed
+                    print("Warning: 'postcards' variable was None, treated as empty list.")
 
             from planner.display import show_cli_plan
             show_cli_plan(
@@ -159,8 +194,8 @@ def main():
                 forecast=forecast,
                 postcards=slot_postcards
             )
-            tour_sights = [s for slot_sights in tour_plan.values() for s in slot_sights]
-            fmap = plot_route_with_sights(tour_sights, CITY_CENTER)
+            #tour_sights = [s for slot_sights in tour_plan.values() for s in slot_sights]
+            fmap = plot_full_day_tour(tour_plan, CITY_CENTER_POINT, mode=mode)
             map_file = "tourist_planner_sights_map.html"
             fmap.save(map_file)
             print(f"Interactive map saved to {map_file}")

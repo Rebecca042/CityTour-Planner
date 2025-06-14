@@ -22,16 +22,18 @@ def generate_random_forecast() -> dict:
     }
 
 
-def fetch_or_generate_forecast(center: Point, randomize: bool = False, date: datetime = None) -> dict:
+def fetch_or_generate_forecast(center: Point, randomize: bool = False, target_date: datetime = None) -> dict:
     """Handles fetching or generating weather forecast based on flags and city center."""
-    if date is None:
-        date = get_test_date()
+    if target_date is None:
+        target_date = get_test_date()
 
     if randomize:
         forecast = generate_random_forecast()
         st.write("🔮 Random forecast generated")
     else:
-        forecast = get_weather_forecast(center.y, center.x, date=date)
+        # Extract the date part (.date()) from the datetime object
+        # And ensure the keyword argument name matches the function definition
+        forecast = get_weather_forecast(center, target_date=target_date.date())
         st.write("📡 Real forecast retrieved")
 
     return forecast

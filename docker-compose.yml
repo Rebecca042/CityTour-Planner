@@ -1,0 +1,43 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # FastAPI Backend Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend # Points to the backend Dockerfile
+    container_name: citytour_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload # Points to api.main:app
+    environment:
+      PYTHONUNBUFFERED: "1"
+    networks:
+      - app_network
+
+  # Streamlit Frontend Service
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend # Points to the frontend Dockerfile
+    container_name: citytour_streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    command: streamlit run frontend/app.py --server.port 8501 --server.enableCORS false --server.enableXsrfProtection false
+    depends_on:
+      - api
+    environment:
+      API_URL: http://api:8000
+      PYTHONUNBUFFERED: "1"
+    networks:
+      - app_network
+
+# Define a custom network for your services
+networks:
+  app_network:
+    driver: bridge
