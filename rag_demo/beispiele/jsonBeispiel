@@ -1,0 +1,23 @@
+[
+  {
+    "filename": "01_rechnung.pdf",
+    "file_type": "Rechnung",
+    "text_excerpt": "Vielen Dank für Ihren Einkauf bei Berliner Cafés am 03.07.2025...",
+    "metadata": {
+      "betrag": "13,50 €",
+      "datum": "03.07.2025",
+      "quelle": "aus Rechnung"
+    },
+    "ocr_used": false,
+    "icon": "🧾"
+  },
+  {
+    "filename": "02_postkarte.jpg",
+    "file_type": "Postkarte (OCR)",
+    "text_excerpt": "Liebe Grüße aus dem wunderschönen Botanischen Garten...",
+    "metadata": {
+      "ocr_used": true
+    },
+    "icon": "📮"
+  }
+]

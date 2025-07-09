@@ -1,0 +1,18 @@
+// components/DocumentCard.jsx
+export default function DocumentCard({ doc }) {
+  return (
+    <div className="rounded-xl shadow-md p-4 border bg-white">
+      <div className="text-3xl">{doc.icon}</div>
+      <h2 className="font-semibold">{doc.file_type}</h2>
+      <p className="text-gray-500 text-sm">{doc.filename}</p>
+      <p className="mt-2 text-sm italic text-ellipsis">{doc.text_excerpt}</p>
+      <ul className="text-xs mt-2 text-gray-700">
+        {Object.entries(doc.metadata).map(([k, v]) => (
+          <li key={k}>
+            <strong>{k}:</strong> {v?.toString()}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

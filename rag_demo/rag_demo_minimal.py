@@ -1,4 +1,4 @@
-# RAG-demo/rag_demo.py
+# rag_demo/rag_demo_minimal.py
 from functools import lru_cache
 
 from langchain.chains.retrieval_qa.base import RetrievalQA

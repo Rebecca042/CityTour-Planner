@@ -1,4 +1,8 @@
-from rag_demo import narrate
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from .rag_demo_minimal import narrate
 
 def test_narrate_contains_keyword():
     result = narrate()
