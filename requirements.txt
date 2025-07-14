@@ -108,3 +108,8 @@ watchfiles==1.0.5
 websockets==15.0.1
 xyzservices==2025.4.0
 zipp==3.21.0
+
+langchain~=0.3.26
+pytest~=8.4.1
+pytesseract~=0.3.13
+reportlab~=4.4.2

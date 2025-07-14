@@ -52,3 +52,27 @@ class DigitalMemoryCapsule:
                 lines.append(f"{typ}: {text}")
 
         return "\n".join(lines)
+
+    def format_documents_as_context(self) -> str:
+        lines = []
+        for doc in self.document_overviews:
+            typ = doc.get("file_type", "document").lower()
+            excerpt = doc.get("text_excerpt", "").strip()
+            if not excerpt:
+                continue
+            label = typ.replace(" ", "_")
+            lines.append(f"[{label}]: {excerpt}")
+        return "\n".join(lines)
+
+    @property
+    def context_formatted(self) -> str:
+        lines = []
+        for doc in self.document_overviews:
+            typ = doc.get("file_type", "document").lower()
+            excerpt = doc.get("text_excerpt", "").strip()
+            if not excerpt:
+                continue
+            label = typ.replace(" ", "_")
+            lines.append(f"[{label}]: {excerpt}")
+        return "\n".join(lines)
+

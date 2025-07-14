@@ -1,6 +1,6 @@
 import pytest
 from rag_demo.document_overview import DocumentOverviewBuilder
-from ..doc_processing.base import DocProcessor
+from doc_processing.base import DocProcessor
 
 class DummyProcessor(DocProcessor):
     def __init__(self, file_path: str):

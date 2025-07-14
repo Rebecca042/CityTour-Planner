@@ -1,5 +1,6 @@
 # doc_processing/factory.py
 import logging
+from typing import Union
 
 from .rechnung import RechnungProcessor
 from .postkarte import PostkarteProcessor
@@ -9,42 +10,46 @@ from .fallback import FallbackProcessor
 from .ocrprocessor import OCRDecorator
 from .dummy_processor import DummyProcessor  # importiere den DummyProcessor
 
+
 class DocProcessorFactory:
-    _mapping = {
-        "rechnung": RechnungProcessor,
-        "postkarte": PostkarteProcessor,
-        "tagebuch": TagebuchProcessor,
-        "broschuere": BroschuereProcessor,
-    }
+    def __init__(self, use_dummy=False, ocr_enabled=True, ocr_filetypes=None):
+        self.use_dummy = use_dummy
+        self.ocr_enabled = ocr_enabled
+        self.ocr_filetypes = ocr_filetypes or [".jpg", ".jpeg", ".png"]
+        self._mapping = {
+            "rechnung": RechnungProcessor,
+            "postkarte": PostkarteProcessor,
+            "tagebuch": TagebuchProcessor,
+            "broschuere": BroschuereProcessor,
+        }
 
-    @staticmethod
-    def get_processor(file_path: str):
-        # Für den ersten Test immer DummyProcessor zurückgeben
-        return DummyProcessor(file_path)
-
-    @staticmethod
-    def get_processor_advanced(file_path: str):
+    def detect_doc_type(self, file_path: str) -> Union[str, None]:
         path_lower = file_path.lower()
-        for key, processor in DocProcessorFactory._mapping.items():
+        for key in self._mapping:
             if key in path_lower:
-                base_processor = processor(file_path)
-                if DocProcessorFactory._needs_ocr(file_path):
-                    logging.info(f"Applying OCRDecorator to {file_path}")
-                    return OCRDecorator(base_processor)
-                else:
-                    return base_processor
-        # Fallback mit Info
-        logging.warning(f"Unknown document type for {file_path}, using FallbackProcessor")
-        fallback = FallbackProcessor(file_path)
-        if DocProcessorFactory._needs_ocr(file_path):
-            logging.info(f"Applying OCRDecorator to fallback processor for {file_path}")
-            return OCRDecorator(fallback)
-        return fallback
+                return key
+        return None
 
-    @staticmethod
-    def _needs_ocr(file_path: str) -> bool:
-        # OCR nur bei Bilddateien (PDF evtl. gesondert behandeln)
-        return file_path.lower().endswith((".jpg", ".jpeg", ".png"))
+    def needs_ocr(self, file_path: str) -> bool:
+        if not self.ocr_enabled:
+            return False
+        return any(file_path.lower().endswith(ext) for ext in self.ocr_filetypes)
+
+    def get_processor(self, file_path: str):
+        if self.use_dummy:
+            return DummyProcessor(file_path)
+
+        doc_type = self.detect_doc_type(file_path)
+        if doc_type:
+            base_processor = self._mapping[doc_type](file_path)
+        else:
+            base_processor = FallbackProcessor(file_path)
+
+        if self.needs_ocr(file_path):
+            print("Using OCRDecorator")
+            return OCRDecorator(base_processor)
+        return base_processor
+
 
 
 

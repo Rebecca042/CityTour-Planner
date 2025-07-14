@@ -1,11 +1,13 @@
 from rag_demo.city_tour_loader import CityTourLoader
+from rag_demo.doc_processing.factory import DocProcessorFactory
 from rag_demo.loader import load_documents, split_documents
 from rag_demo.memory_capsule.capsule import DigitalMemoryCapsule
 from rag_demo.narration.factory import NarrationStrategyFactory
+from rag_demo.prompts.prompt_manager import get_system_prompt
 from rag_demo.retrieval import build_vectorstore
 from rag_demo.pipeline import get_narration_pipeline
 from rag_demo.rag_chain import build_rag_chain
-from rag_demo.prompts import DEFAULT_QUERY
+from rag_demo.prompts_file import DEFAULT_QUERY
 
 SYSTEM_PROMPT_TEMPLATE = (
     "Du bist ein enthusiastischer Reiseplaner. Erzähle eine lebendige und motivierte Geschichte "
@@ -13,7 +15,7 @@ SYSTEM_PROMPT_TEMPLATE = (
     "und besondere Erlebnisse. Beende mit einem freundlichen Abschied und guten Wünschen."
 )
 
-def get_system_prompt(city: str) -> str:
+def get_system_prompt_Xxxx(city: str) -> str:
     return SYSTEM_PROMPT_TEMPLATE.format(city=city)
 
 def narrate(pdf_path=".\docs\MotivationLLM.pdf", query=DEFAULT_QUERY) -> str:
@@ -54,38 +56,33 @@ if __name__ == "__main__":
     print("DEMO")
 
     folder = "docs/paris"
-    loader = CityTourLoader(folder)
+    factory = DocProcessorFactory(use_dummy=False, ocr_enabled=True)
+    loader = CityTourLoader(folder, factory)
     overviews = loader.load_all_overviews()
-    capsule = DigitalMemoryCapsule(overviews)
 
     for overview in overviews:
         print(overview)
+
     capsule = DigitalMemoryCapsule(overviews)
 
     # summary einmal erzeugen und ggf. cachen
     summary = capsule.summarize()
 
-    # Flag, ob LLM genutzt werden soll
     use_llm = True
 
-    # Wähle Strategie (hier als Beispiel Summary_Strategy)
-    from narration.strategies import Summary_Strategy, Storytelling_Strategy
+    from narration.strategies.storytelling import Storytelling_Strategy
+    from narration.strategies.summary import Summary_Strategy
 
     if use_llm:
-        # Nutze eine Strategie, die LLM aufruft, z.B. Storytelling_Strategy
-        capsule = DigitalMemoryCapsule(overviews)
         strategy = Storytelling_Strategy()
         city = "Paris"
-        system_prompt = get_system_prompt(city)
-        prompt = "Erzähle mir eine lebendige Geschichte über meine Parisreise basierend auf der Zusammenfassung. Bitte erzähle ausführlich und beschreibe den Tag von morgens bis abends mit mindestens 200 Wörtern."
-        prompt = system_prompt
-        narrative = strategy.generate(capsule, prompt)
-        print(narrative)
+        prompt = get_system_prompt(city, capsule)
     else:
-        # Nutze Strategie, die nur lokal arbeitet (z.B. Summary_Strategy)
         strategy = Summary_Strategy()
-        narrative = strategy.generate(capsule, prompt=summary)
+        prompt = summary
 
+    print("Start narration")
+    narrative = strategy.generate(capsule, prompt)
     print(narrative)
 
     print("Question:", DEFAULT_QUERY)

@@ -1,13 +1,19 @@
 # 🚀 RAG-Demo: Retrieval-Augmented Generation Proof-of-Concept
 
-Dieses Projekt zeigt, wie man Large Language Models lokal (ohne Cloud-API) mit Vektordatenbanken (FAISS) kombiniert, um Dokumente (PDFs) effizient zu durchsuchen und darauf basierende Antworten zu generieren.
+Dieses Projekt zeigt, wie man Large Language Models lokal (ohne Cloud-API) mit Vektordatenbanken (FAISS) kombiniert, um Dokumente (PDFs, Bilder etc.) effizient zu durchsuchen und darauf basierende Antworten zu generieren.
+
+---
 
 ## 🛠 Technologien
 
-- 🧠 LangChain  
-- 🤗 HuggingFace Transformers  
-- 📚 FAISS Vektorindex  
-- 📄 PyPDFLoader  
+* 🧐 LangChain
+* 🤗 HuggingFace Transformers
+* 📚 FAISS Vektorindex
+* 📄 PyPDFLoader
+* 🖼️ Tesseract-OCR / EasyOCR (für Bildverarbeitung)
+* 🥪 OpenCV / PIL für Bildvorverarbeitung
+
+---
 
 ## ⚙️ Installation
 
@@ -15,9 +21,18 @@ Dieses Projekt zeigt, wie man Large Language Models lokal (ohne Cloud-API) mit V
 pip install -r requirements.txt
 ```
 
+### Zusätzlich (nur bei OCR-Verwendung):
+
+* [Tesseract-OCR installieren](https://github.com/tesseract-ocr/tesseract)
+* `TESSDATA_PREFIX` und `tesseract_cmd` korrekt setzen (siehe `ocr_demo.py`)
+
+---
+
 ## 📂 Vorbereitung
 
-Lege das Beispiel-PDF `MotivationLLM.pdf` in den Projektordner.
+Lege z. B. ein Beispiel-PDF oder Bild wie `MotivationLLM.pdf` oder `postkarte_montmartre3.png` in den Projektordner (bzw. `docs/paris` für CityTour).
+
+---
 
 ## ▶️ Nutzung
 
@@ -26,47 +41,65 @@ python rag_demo_minimal.py
 ```
 
 Dies führt eine Beispiel-Abfrage aus:
-„Welche Erfahrungen hat Rebecca mit LLMs?“
+**„Welche Erfahrungen hat Rebecca mit LLMs?“**
 
-## 🧪 Test
+---
+
+## 🤪 Tests
 
 ```bash
 pytest test_rag_demo.py
+python -m unittest test_citytour_loading.py
 ```
 
-## 🔮 Zukünftige Verbesserungen / TODOs
-
-- CLI-Interface für flexible Abfragen (z.B. `python rag_demo.py --query "Deine Frage"`)  
-- Unterstützung weiterer Dokumentformate (z.B. DOCX, TXT)  
-- Verbesserte Fehlerbehandlung und Logging  
-- Integration in bestehende CityTour Planner App als Modul  
-- Automatisierte Tests mit verschiedenen PDFs und Queries  
-- Optionaler Cloud-Support für größere Modelle  
+---
 
 ## ✨ Update: Proof-of-Concept für OCR-gestützte Reiseerzählung abgeschlossen
 
 Dieses Update bringt die erste vollständige Version des modularen **CityTour Planner** Prototyps:
 
-- 📄 **OCR-Integration vorbereitet**: Die erweiterbare `DocProcessorFactory` erkennt gescannte Reisedokumente und kann optional mit Tesseract-OCR kombiniert werden (`OCRDecorator`). So lassen sich auch komplexe Pipelines einfach testen und austauschen.
+### 🧩 Komponenten
 
-- 🧠 **LLM-Narration implementiert**: Auf Basis der zusammengefassten Inhalte generieren verschiedene Strategien wie `Summary_Strategy` oder `Storytelling_Strategy` lebendige, personalisierte Reiseerzählungen.
+* 💾 **OCR-Decorator erweitert**: Erkennt gescannte Dokumente (JPG, PNG) automatisch und führt eine fallback-basierte Textextraktion durch. OCR wird nur dann verwendet, wenn nötig (inkl. Caching & Metadaten).
 
-- 🔧 **Dummy-Daten & Simulation**: Zum initialen Testlauf wird ein realitätsnaher Dummy-Datensatz verwendet – das OCR-Verhalten ist modular vorbereitet und kann später durch echte gescannte Dokumente ersetzt werden.
+* 🔍 **Bild-Vorverarbeitung (Demo)**: `ocr_demo.py` demonstriert mehrere Pipelines zur Verbesserung der OCR-Erkennung (adaptive Thresholds, CLAHE, Upscaling usw.).
 
-- 📦 **Modular & erweiterbar**: Die Architektur folgt dem Prinzip der Trennung von Verantwortung (Factory, Strategie, Processing). Neue Dokumenttypen, Analysepfade oder Erzählstrategien lassen sich einfach integrieren.
+* 🧠 **LLM-Narration**: Mit `Summary_Strategy` und `Storytelling_Strategy` werden strukturierte oder erzählerische Zusammenfassungen generiert.
+
+* 🔧 **Dummy-Daten & Simulation**: Erste Tests laufen mit realitätsnahen Beispieldaten (PDF + OCR-Postkarten), modular vorbereitet für echte Reisenotizen.
+
+* 📆 **Erweiterbare Architektur**: Factory-, Strategie- und Prozessor-Pattern erlauben einfache Erweiterung für weitere Dokumenttypen, Sprachen, Engines oder Erzählformen.
 
 ---
+### 📊 OCR Evaluations-Demo
+
+Die eigenständige Demo befindet sich in `demo_test_tesseract.py` und ermöglicht:
+
+- Vergleich von **Tesseract** und **EasyOCR**  
+- Testen verschiedener **Vorverarbeitungs-Pipelines** (CLAHE, adaptive Thresholds, Hochskalierung)  
+- Visualisierung von Zwischenstufen der Bilder (Graustufen, entrauscht, Schwellenwert, etc.)  
+- Experimentieren mit unterschiedlichen OCR-Konfigurationen (z.B. `--psm 6`, Sprachwahl)  
+
+Beispielhafte Nutzung:
+
+```bash
+python demo_test_tesseract.py
+```
+👉 Eingabebild: `docs/paris/postkarte_montmartre3.png` (Beispiel inklusive)
+🗪 Ausgabe: OCR-Ergebnisse werden gedruckt, Zwischenergebnisse als Bilddateien gespeichert (z.B. `gray.jpg`, `resized.jpg`)
+
+
+--- 
 
 ## 🛠️ Nächste Schritte
 
-- Test mit echten Reisedokumenten (JPG)
-
-- Aktivierung der echten Tesseract-OCR-Pipeline
-
-- Anbindung an das RAG-Demo-Modul zur interaktiven Q&A
+* ✅ Test mit echten Reisedokumenten (z. B. eingescannten Karten, PDFs)
+* ✅ Aktivierung der vollständigen OCR-Pipeline mit Tesseract / EasyOCR
+* ↻ Integration in interaktive RAG-Demo
+* 🌍 Multilinguale Unterstützung (z. B. französische Postkarten)
 
 ---
 
 ## 💬 Feedback & Austausch
 
-Dieses Projekt verbindet klassische Softwareentwicklung (APIs, Modularität, Testbarkeit) mit kreativen Möglichkeiten generativer KI. Ich freue mich über Ideen, Fragen und jedes konstruktive Feedback! 😊
+Dieses Projekt verbindet klassische Softwareentwicklung (Modularität, Testbarkeit) mit kreativen Möglichkeiten generativer KI. Ich freue mich über Ideen, Erfahrungen oder Verbesserungsvorschläge! 😊
